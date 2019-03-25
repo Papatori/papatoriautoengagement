@@ -10,8 +10,6 @@ const client = new Twitter({
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 })
 
-const params = {count: 200}//200件まで取得可能。デフォルトは20
-
 const WHITE_LIST = [
   'コミュニケーション',
   '感謝',
@@ -28,6 +26,11 @@ const RT_BLACK_LIST = ['RT']
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
+  const params = {
+    count: 200,
+    exclude_replies: true,
+    exclude: "retweets" // retweetを除外
+  }
   await client.get('statuses/home_timeline', params, function(error, tweets, response) {
     console.log(`${new Date()}> ${tweets.length} tweets founded!`)
     if (!error) {
@@ -63,5 +66,44 @@ router.get('/', async function(req, res, next) {
   // console.log("menuItems: " + JSON.stringify(menuItems))
   res.render('job/index', {message: "SUCCESS!!"});
 });
+
+
+router.get('/glue', async function(req, res, next) {
+  const params = {
+    q: "from:AGORA0930 -filter:replies",
+    count: 3,
+    exclude: "retweets" // retweetを除外
+  }
+  await client.get('search/tweets', params, function(error, datas, response) {
+    const tweets = datas.statuses
+    console.log(`${new Date()}> ${tweets.length} tweets founded!`)
+    if (!error) {
+      // console.log(tweets)
+      for(const tweet of tweets){
+        if(BLACK_LIST.some(bl => tweet.text.includes(bl))) continue
+        // ブラックリストの単語が１つも含まれない場合、favとRTする
+        console.log(`${new Date()}> target tweet text: ${tweet.text}`)
+        client.post(`favorites/create.json?id=${tweet.id}`, {id: tweet.id_str}, function(error, tw, response) {
+          if(error) {
+            console.log(`${new Date()}> fav error (id, ${tweet.id}): ${JSON.stringify(error)}`)
+          }else{
+            console.log(`${new Date()}> tweet(id: ${tw.id}) faved!`)
+          }
+        }) //非同期実行
+        client.post(`statuses/retweet/${tweet.id_str}.json`, {id: tweet.id_str}, function(error, tw, response) {
+          if(error){
+            console.log(`${new Date()}> RT error (id, ${tweet.id}): ${JSON.stringify(error)}`)
+          }else{
+            console.log(`${new Date()}> tweet(id: ${tw.id}) RTed!`)
+          }
+        })
+      }
+    }
+  })
+  
+  // console.log("menuItems: " + JSON.stringify(menuItems))
+  res.render('job/index', {message: "SUCCESS!!"});
+});
+  
 
 module.exports = router;
