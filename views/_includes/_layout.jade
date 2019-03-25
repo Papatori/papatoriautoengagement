@@ -1,0 +1,17 @@
+doctype html
+block vars
+html.has-navbar-fixed-top(lang="ja")
+	head
+		include _head
+		include _style
+		block style
+
+	body(class=key)
+		include _header
+		section.section
+			.container
+				block contents
+		include _footer
+
+		include _script
+		block js

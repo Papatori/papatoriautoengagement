@@ -1,0 +1,29 @@
+extends _includes/_layout
+
+block vars
+  include _includes/_config
+  - var key = "top"
+  - var page = pages[key]
+
+block style
+  link(rel='stylesheet', href=domain+root+assets_root+"/top/css/main.css")
+
+block contents
+  // Contents
+  - menu = {};
+
+  .card-list
+    - for (var i = 0; i < menuItems.length; i++){
+      - var menuId = menuItems[i].menuId;
+      - menu[menuId] = {};
+      - menu[menuId] = menuItems[i];
+      //- - console.log("@views/index menu: " + JSON.stringify(menu))
+      .card
+        .card-content
+          p.title.is-5.name= menu[menuId].wordTitle
+          .content
+            p.suptitle.is-6.description= menu[menuId].description
+      - }
+
+block js
+    script(type='text/javascript', src=domain+root+assets_root+"/top/js/main.js")

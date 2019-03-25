@@ -1,0 +1,64 @@
+.section{
+  padding: 1rem 1.5rem;
+}
+.navbar.is-fixed-top{
+  z-index: 100;
+}
+.navbar-menu{
+  align-items: stretch;
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+.navbar-brand{
+  background: #f1b895;
+}
+.navbar-brand>a{
+  color:#943939;
+  font-weight: bold
+}
+.navbar-menu {
+  background: #fff;
+  box-shadow: initial;
+}
+.navbar-item{
+  max-width: calc(100% - 120px);
+}
+.search-field{
+  display: flex;
+}
+.navbtn{
+  height: 28px;
+}
+.card-list:last-child{
+  margin-bottom: -0.75rem;
+}
+.card-list {
+  max-width: 768px;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  margin-top: -0.75rem;
+  margin: auto;
+}
+.image img{
+  position: absolute;
+  top: -24px;
+  left: -24px;
+  width: 144px;
+}
+.image.is-48x48{
+  width:96px;
+}
+.media-content{
+  margin-left: -25px;
+}
+.card{
+  margin-bottom: 15px;
+}
+
+@media screen and (min-width: 1088px){
+  .navbar {
+    align-items: stretch;
+    display: block;
+  }
+}

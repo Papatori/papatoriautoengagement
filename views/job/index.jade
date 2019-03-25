@@ -1,0 +1,16 @@
+extends ../_includes/_layout
+
+block vars
+  include ../_includes/_config
+  - var key = "job"
+  - var page = pages[key]
+
+block style
+  link(rel='stylesheet', href=domain+root+assets_root+"/job/css/main.css")
+
+block contents
+  // Contents
+  p.title.is-5.name #{message}
+
+block js
+    script(type='text/javascript', src=domain+root+assets_root+"/jobs/js/main.js")
