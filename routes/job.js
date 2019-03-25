@@ -28,7 +28,7 @@ const RT_BLACK_LIST = ['RT']
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  await client.get('statuses/home_timeline', params, async function(error, tweets, response) {
+  await client.get('statuses/home_timeline', params, function(error, tweets, response) {
     console.log(`${new Date()}> ${tweets.length} tweets founded!`)
     if (!error) {
       // console.log(tweets)
@@ -37,7 +37,7 @@ router.get('/', async function(req, res, next) {
         if(BLACK_LIST.some(bl => tweet.text.includes(bl))) continue
         // ホワイトリストの単語が１つ以上含まれるかつ、ブラックリストの単語が１つも含まれない場合、favする
         console.log(`${new Date()}> target tweet text: ${tweet.text}`)
-        await client.post(`favorites/create.json?id=${tweet.id}`, {id: tweet.id_str}, function(error, tw, response) {
+        client.post(`favorites/create.json?id=${tweet.id}`, {id: tweet.id_str}, function(error, tw, response) {
           if(error) {
             console.log(`${new Date()}> fav error (id, ${tweet.id}): ${JSON.stringify(error)}`)
           }else{
@@ -48,7 +48,7 @@ router.get('/', async function(req, res, next) {
         // if(RT_WHITE_LIST.some(wl => tweet.text.includes(wl))
         // && !RT_BLACK_LIST.some(bl => tweet.text.includes(bl))){
         if(!RT_BLACK_LIST.some(bl => tweet.text.includes(bl))){
-          await client.post(`statuses/retweet/${tweet.id_str}.json`, {id: tweet.id_str}, function(error, tw, response) {
+          client.post(`statuses/retweet/${tweet.id_str}.json`, {id: tweet.id_str}, function(error, tw, response) {
             if(error){
               console.log(`${new Date()}> RT error (id, ${tweet.id}): ${JSON.stringify(error)}`)
             }else{
