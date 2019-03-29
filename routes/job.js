@@ -107,22 +107,31 @@ router.get('/glue', async function(req, res, next) {
   
 
 router.get('/autodmonfollow', async function(req, res, next) {
-  const userId = req.query.FullName
+  const userName = decodeURIComponent(req.query.FullName)
   const text = "フォローありがとうございます！\n\n改めまして、育児・IT・人間関係についてつぶやいているパパトリです。\n\n最近では、人間関係・仕事のお悩み解決や引きこもり問題などに興味があり、\nボランティアで困っている方たちの支援活動もしていたりします。\n\n楽しくTwitterできたら嬉しいです。\nもし良かったら、気軽に絡んでください♪\n\n"
-  const data = {
-    "event": {
-      "type": "message_create",
-      "message_create": {
-        "target": {
-          "recipient_id": userId
-        },
-        "message_data": {
-          "text": text
+
+  await client.get(`users/lookup.json`, {screen_name: userName}, function(error, users, response) {
+    if(error){
+      console.log(`${new Date()}> users lookup error (userName, ${userName}): ${JSON.stringify(error)}`)
+    }else{
+      console.log(`${new Date()}> (userName, ${userName}) founded: ${JSON.stringify(users)}`);
+
+      const data = {
+        "event": {
+          "type": "message_create",
+          "message_create": {
+            "target": {
+              "recipient_id": userId
+            },
+            "message_data": {
+              "text": text
+            }
+          }
         }
       }
+      console.log(`${new Date()}> DM Data: ${JSON.stringify(data, null, "  ")}`)
     }
-  }
-  console.log(`${new Date()}> DM Data: ${JSON.stringify(data, null, "  ")}`)
+  })
 
   // await client.post('direct_messages/events/new ', data, function(error, tweet, response) {
   //   if (error) {
