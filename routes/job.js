@@ -79,7 +79,8 @@ router.get('/glue', async function(req, res, next) {
     "cocorotarosan",
     "_MR_channel",
     "EGAO_no_musuko",
-    "kiki00079"
+    "kiki00079",
+    "osunnotsubuyaki"
   ]
 
   for(const userId of userIds){
