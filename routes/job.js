@@ -106,12 +106,40 @@ router.get('/glue', async function(req, res, next) {
 });
   
 
+router.get('/autodmonfollow', async function(req, res, next) {
+  const userId = req.params.FullName
+  const text = "フォローありがとうございます！\n\n改めまして、育児・IT・人間関係についてつぶやいているパパトリです。\n\n最近では、人間関係・仕事のお悩み解決や引きこもり問題などに興味があり、\nボランティアで困っている方たちの支援活動もしていたりします。\n\n楽しくTwitterできたら嬉しいです。\nもし良かったら、気軽に絡んでください♪\n\n"
+  const data = {
+    "event": {
+      "type": "message_create",
+      "message_create": {
+        "target": {
+          "recipient_id": userId
+        },
+        "message_data": {
+          "text": text
+        }
+      }
+    }
+  }
+
+  // await client.post('direct_messages/events/new ', data, function(error, tweet, response) {
+  //   if (error) {
+  //     console.log(`${new Date()}> DM error (userId, ${userId}): ${JSON.stringify(error)}`)
+  //   }else{
+  //     console.log(`${new Date()}> (userId, ${userId}) (text, ${text}) sended direct message!`);
+  //   }
+  // });
+
+  res.render('job/index', {message: "userId: " + userId + "\n\ntext: " + text});
+});
+
 router.get('/autotweet', async function(req, res, next) {
   const TEXTS = [
     "どっちに転んでも良いように仕組んでおくことがリスクヘッジ。\n\n選択肢ごとの最悪のシナリオを比べて最もマシなプランを選ぶのがミニマックス戦略。\n\n常に気を付けておくと、人生の小から中くらいの困難はほぼ回避できる。",
     "訪問ありがとうございます！\n\n今年、息子が生まれました。息子が大きくなったら教えたいことを今のうちからブログに書いてます。https://blog.papatori.com   \n\n・子育て世代のパパママ\n・中高生、大学生\n・社会に出るのが不安な方\n・人間関係に苦手意識がある方\n\n１つでも当てはまったらフォローしてね♪",
     "ビジネススキルは家事育児にも応用できる。\n\n効率化や役割分担、品質管理など多岐にわたる。\n\n父親が家事も育児も参加しないのは、家庭内リソースの有効活用の観点で大いに損していると言わざるをえない。",
-    "絡んだことある方もそうでない方も\n\nすべてのフォロワーさんに感謝です\n\n僕がツイッターを通して発言した内容は\n\n500人のフォロワーさんと\n\nその先にいる何万、何十万の人々に\n\n届くポテンシャルを秘めている\n\nだから\n\n一つ一つの発信に魂込めて\n\n一生懸命取り組んでます",
+    "絡んだことある方もそうでない方も\n\nすべてのフォロワーさんに感謝です\n\n僕がツイッターを通して発言した内容は\n\nすべてのフォロワーさんと\n\nその先にいる何万、何十万の人々に\n\n届くポテンシャルを秘めている\n\nだから\n\n一つ一つの発信に魂込めて\n\n一生懸命取り組んでます",
     "人と話すのが怖いと思うのは\n\n気を悪くさせたらどうしよう\n\nと思うから\n\nでも\n\n本当に気を悪くさせてしまったなら\n\nやることは１つ\n\n誠心誠意、謝るだけ\n\n大事なのは\n\nいついかなる状況でも\n\n自分は謝ることができる\n\nという心構え\n\nこの心構えさえあれば\n\n人と話すのは怖くない",
     "リアルの生活とTwitter活動を両立するため、Twitter APIを使ってRTといいねを一部自動化することにしました。\n\n大切なフォロワーさんたちとの交流はきっちりしたいけど、子育てや家事も大事なので、やむを得ず。。。\n\nリプやDMは全部ありがたく見てます！\n\n自動化ノウハウ気になる方にはお教えします。",
     "調べてみると\n\nコミュニケーションが苦手\n\nという日本人は\n\n半数以上もいるのだそう\n\n調査によってバラツキはあれど\n\n60 - 70 % もの人が\n\nコミュニケーションに苦手意識\n\nを持っているという結果だ\n\nかくいう僕も昔は苦手でした\n\n克服するために考えたこと\n\nブログにしてますhttps://blog.papatori.com ",
@@ -179,7 +207,6 @@ router.get('/autotweet', async function(req, res, next) {
     "子どもが、自らの爪で自分の顔引っ掻いて血が出てることがよくあるんだけど、寝て起きる度に治っていっていて生命力の強さを感じる\n\n#イクメン #育児",
     // "",
   ]
-
 
   const text = TEXTS[Math.floor(Math.random() * TEXTS.length)] // TEXTSの中からランダムに1件取得
 
