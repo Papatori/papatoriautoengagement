@@ -122,6 +122,7 @@ router.get('/autodmonfollow', async function(req, res, next) {
       }
     }
   }
+  console.log(`${new Date()}> DM Data: ${JSON.stringify(data, null, "  ")}`)
 
   // await client.post('direct_messages/events/new ', data, function(error, tweet, response) {
   //   if (error) {
