@@ -27,7 +27,7 @@ const RT_BLACK_LIST = ['RT']
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   const params = {
-    count: 200,
+    count: 20,
     exclude_replies: true,
     exclude: "retweets" // retweetを除外
   }
@@ -124,21 +124,29 @@ router.get('/glue', async function(req, res, next) {
   
 
 router.get('/autodmonfollow', async function(req, res, next) {
-  const userName = decodeURIComponent(req.query.FullName)
+  const name = decodeURIComponent(req.query.FullName) // IFTTTから連携される新規フォロワーのname
   const text = "フォローありがとうございます！\n\n改めまして、育児・IT・人間関係についてつぶやいているパパトリです。\n\n最近では、人間関係・仕事のお悩み解決や引きこもり問題などに興味があり、\nボランティアで困っている方たちの支援活動もしていたりします。\n\n楽しくTwitterできたら嬉しいです。\nもし良かったら、気軽に絡んでください♪\n\n"
 
-  await client.get(`users/lookup.json`, {screen_name: userName}, function(error, users, response) {
+  await client.get(`followers/list.json?cursor=-1&skip_status=true`, {cursor: -1, skip_status:true}, async function(error, data, response){
+    const followers = data.users
     if(error){
-      console.log(`${new Date()}> users lookup error (userName, ${userName}): ${JSON.stringify(error)}`)
+      console.log(`${new Date()}> users lookup error (name, ${name}): ${JSON.stringify(error)}`)
+      res.render('job/index', {message: JSON.stringify(error)});
     }else{
-      console.log(`${new Date()}> (userName, ${userName}) founded: ${JSON.stringify(users)}`);
+      console.log(`${new Date()}> followers: ${JSON.stringify(followers)}`);
+    }
 
+    for(const follower of followers){
+      if (name !== follower.name) continue // フォロワーの名前がIFTTTから連携されるユーザーのnameと異なったら次レコード
+
+      console.log(`${new Date()}> (name, ${name}) founded: ${JSON.stringify(follower)}`);
+    
       const data = {
         "event": {
           "type": "message_create",
           "message_create": {
             "target": {
-              "recipient_id": userId
+              "recipient_id": follower.id_str
             },
             "message_data": {
               "text": text
@@ -147,18 +155,20 @@ router.get('/autodmonfollow', async function(req, res, next) {
         }
       }
       console.log(`${new Date()}> DM Data: ${JSON.stringify(data, null, "  ")}`)
+
+      await client.post('direct_messages/events/new', data, function(error, result, response) {
+        if (error) {
+          console.log(`${new Date()}> DM error (name, ${name}): ${JSON.stringify(error)}`)
+        }else{
+          console.log(`${new Date()}> direct message sended, data: ${JSON.stringify(data)}!`);
+        }
+      });
+
+      break // 一致するフォロワーが見つかってDMを送ったらループ終了
     }
   })
 
-  // await client.post('direct_messages/events/new ', data, function(error, tweet, response) {
-  //   if (error) {
-  //     console.log(`${new Date()}> DM error (userId, ${userId}): ${JSON.stringify(error)}`)
-  //   }else{
-  //     console.log(`${new Date()}> (userId, ${userId}) (text, ${text}) sended direct message!`);
-  //   }
-  // });
-
-  res.render('job/index', {message: "userId: " + userId + "\n\ntext: " + text});
+  res.render('job/index', {message: "name: " + name + "\n\ntext: " + text});
 });
 
 router.get('/autotweet', async function(req, res, next) {
